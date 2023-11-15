@@ -52,17 +52,4 @@ model = PPO(
     n_steps=512,
 )
 
-state = env.reset()
-pyplot.imshow(state[0])
-env.close()
-
-
-quit()
-
-done = True
-for step in range(10000):
-    if done:
-        env.reset()
-    state, reward, done, info, _ = env.step(env.action_space.sample())
-    env.render()
-env.close()
+model.learn(total_timesteps=100000, callback=callback)
