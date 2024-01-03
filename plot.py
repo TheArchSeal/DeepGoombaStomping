@@ -23,10 +23,11 @@ env = GrayScaleObservation(env, keep_dim=True)
 env = DummyVecEnv([lambda: env])
 env = VecFrameStack(env, 4, channels_order="last")
 
-points = []
+points_x = []
+points_y = []
 
 for file in os.listdir(MODEL_DIR):
-    model = DQN.load(os.path.join(MODEL_DIR, file.removesuffix(".zip")))
+    model = DQN.load(os.path.join(MODEL_DIR, file))
     state = env.reset()
 
     done = False
@@ -38,9 +39,8 @@ for file in os.listdir(MODEL_DIR):
         cumulative_reward += reward
         env.render()
 
-    x = int(re.search("(?<=best_model_)[0-9]+(?=.zip)"))
-    y = cumulative_reward
-    points.append((x, y))
+    points_x.append(int(re.search("(?<=best_model_)[0-9]+(?=.zip)")))
+    points_y.append(cumulative_reward)
 
-plt.plot(points)
+plt.plot(points_x, points_y)
 plt.show()
