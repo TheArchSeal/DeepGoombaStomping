@@ -13,7 +13,7 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
 
 # file paths for models and logs
-CHECKPOINT_DIR = ".\\models\\"
+CHECKPOINT_DIR = ".\\PPOmodels\\"
 LOG_DIR = ".\\logs\\"
 
 
@@ -39,7 +39,7 @@ class TrainAndLoggingCallback(BaseCallback):
 JoypadSpace.reset = lambda self, **kwargs: self.env.reset(**kwargs)
 # setup environment
 env = gym_super_mario_bros.make(
-    "SuperMarioBros-v0", apply_api_compatibility=True, render_mode="human"
+    "SuperMarioBros-v0", apply_api_compatibility=True  # , render_mode="human"
 )
 env = JoypadSpace(env, SIMPLE_MOVEMENT)
 # preprocess frame data
@@ -55,8 +55,7 @@ model = PPO(
     verbose=1,
     tensorboard_log=LOG_DIR,
     learning_rate=0.000001,
-    n_steps=512,
 )
 
 # run the model
-model.learn(total_timesteps=100000, callback=callback)
+model.learn(total_timesteps=5000000, callback=callback)
