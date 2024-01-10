@@ -59,4 +59,4 @@ model = PPO(
 )
 
 # run the model
-model.learn(total_timesteps=100000, callback=callback)
+model.learn(total_timesteps=5000000, callback=callback)
