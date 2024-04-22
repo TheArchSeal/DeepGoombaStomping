@@ -23,7 +23,7 @@ env = DummyVecEnv([lambda: env])
 env = VecFrameStack(env, 4, channels_order="last")
 
 # setup model
-model = Model("CnnPolicy", env, buffer_size=10000)
+model = Model("CnnPolicy", env, verbose=1, buffer_size=20000)
 
 # run model
 model.learn(total_timesteps=10000000)
