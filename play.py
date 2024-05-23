@@ -1,20 +1,36 @@
 import gym_super_mario_bros as smb
 from nes_py.wrappers import JoypadSpace
-from gym_super_mario_bros.actions import COMPLEX_MOVEMENT as ActionSpace
 import pygame
+
+
+def powerset(s):
+    for i in range(1, 1 << len(s)):
+        yield [e for j, e in enumerate(s) if i >> j & 1]
+
 
 FPS = 60
 RESOLUTION = (256, 240)
+ACTIONS = ["up", "down", "right", "left", "A", "B"]
+ACTION_SPACE = [["NOOP"], *powerset(ACTIONS)]
 KEYBINDS = {
-    pygame.K_RIGHT: "right",
+    pygame.K_w: "up",
+    pygame.K_s: "down",
+    pygame.K_a: "left",
+    pygame.K_d: "right",
+    pygame.K_o: "A",
+    pygame.K_p: "B",
+    pygame.K_UP: "up",
+    pygame.K_DOWN: "down",
     pygame.K_LEFT: "left",
-    pygame.K_UP: "A",
+    pygame.K_RIGHT: "right",
+    pygame.K_x: "A",
+    pygame.K_z: "B",
 }
 
 env = smb.make(
     "SuperMarioBros-v0", apply_api_compatibility=True, render_mode="rgb_array"
 )
-env = JoypadSpace(env, ActionSpace)
+env = JoypadSpace(env, ACTION_SPACE)
 
 pygame.init()
 screen = pygame.display.set_mode(RESOLUTION)
@@ -23,10 +39,10 @@ clock = pygame.time.Clock()
 total_reward = 0
 
 
-def quit():
+def stop():
+    print("\nYour reward: ", total_reward)
     env.close()
     pygame.quit()
-    print("\nYour reward: ", total_reward)
     exit()
 
 
@@ -38,7 +54,7 @@ while not done:
     for event in pygame.event.get():
         match event.type:
             case pygame.QUIT:
-                quit()
+                stop()
             case pygame.KEYDOWN:
                 if event.key in KEYBINDS:
                     keys.add(KEYBINDS[event.key])
@@ -46,12 +62,7 @@ while not done:
                 if event.key in KEYBINDS:
                     keys.remove(KEYBINDS[event.key])
 
-    action = 0
-    for i, a in enumerate(ActionSpace):
-        if keys == set(a):
-            action = i
-            break
-
+    action = sum(1 << ACTIONS.index(key) for key in keys)
     state, reward, done, truncate, info = env.step(action)
     total_reward += reward
 
@@ -62,4 +73,4 @@ while not done:
 
     clock.tick(FPS)
 
-quit()
+stop()
