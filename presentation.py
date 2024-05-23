@@ -27,10 +27,12 @@ class HighJumpSpace(JoypadSpace):
             # replace high jump with regular jump
             byte_action = byte_action & ~self._button_map["AA"] | self._button_map["A"]
             # repeat jump action multiple frames
+            total_reward = 0
             for _ in range(self.high_jump_length - 1):
                 state, reward, done, truncated, info = self.env.step(byte_action)
+                total_reward += reward
                 if done:  # don't step after done
-                    return (state, reward, done, truncated, info)
+                    return (state, total_reward, done, truncated, info)
 
         return self.env.step(byte_action)
 
@@ -47,8 +49,8 @@ ActionSpace.extend(
 )
 
 # setup environment
-env = smb.make("SuperMarioBros-v0", apply_api_compatibility=True, render_mode="human")
-env = HighJumpSpace(env, ActionSpace, 10)
+env = smb.make("SuperMarioBros-v1", apply_api_compatibility=True, render_mode="human")
+env = HighJumpSpace(env, ActionSpace, 30)
 
 # preprocess frame data
 env = GrayScaleObservation(env, keep_dim=True)
@@ -56,7 +58,7 @@ env = DummyVecEnv([lambda: env])
 env = VecFrameStack(env, 4, channels_order="last")
 
 # setup model
-model = Model("CnnPolicy", env, verbose=1, buffer_size=10000)
+model = Model("CnnPolicy", env, verbose=1, buffer_size=5000)
 
 # run model
 model.learn(total_timesteps=10000000)
