@@ -38,7 +38,7 @@ env = JoypadSpace(env, ACTION_SPACE)
 
 # setup window
 pygame.init()
-screen = pygame.display.set_mode(RESOLUTION)
+screen = pygame.display.set_mode(RESOLUTION, pygame.RESIZABLE)
 clock = pygame.time.Clock()
 
 # cumulative user score
@@ -79,7 +79,9 @@ while not done:
     # render to screen
     frame = env.render()
     surface = pygame.pixelcopy.make_surface(frame.transpose(1, 0, 2))
-    screen.blit(surface, (0, 0))
+    screen.blit(
+        pygame.transform.scale(surface, pygame.display.get_surface().get_size()), (0, 0)
+    )
     pygame.display.update()
 
     clock.tick(FPS)
