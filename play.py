@@ -43,27 +43,18 @@ clock = pygame.time.Clock()
 
 # cumulative user score
 total_reward = 0
-
-
-# exit the program
-def stop():
-    print("\nYour reward: ", total_reward)
-    env.close()
-    pygame.quit()
-    exit()
-
-
-# game loop
-state = env.reset()
+env.reset()
 keys = set()
-done = False
-while not done:
+# game loop
+while True:
 
     # input handling
     for event in pygame.event.get():
         match event.type:
             case pygame.QUIT:
-                stop()
+                env.close()
+                pygame.quit()
+                exit()
             case pygame.KEYDOWN:
                 if event.key in KEYBINDS:
                     keys.add(KEYBINDS[event.key])
@@ -84,6 +75,9 @@ while not done:
     )
     pygame.display.update()
 
-    clock.tick(FPS)
+    # restart game
+    if done:
+        print("\nYour reward: ", total_reward)
+        env.reset()
 
-stop()
+    clock.tick(FPS)
